@@ -1,5 +1,3 @@
-// export { Container } from "./Container";
-
 import styles from "./styles.module.css";
 
 type ContainerProps = {
