@@ -9,7 +9,7 @@ export function taskReducer(
 ): TaskStateModel {
   switch (action.type) {
     case TaskActionTypes.START_TASK: {
-      const newTask = action.playload;
+      const newTask = action.payload;
       const nextCycle = getNextCycle(state.currentCycle);
       const secondsRemaining = newTask.duration * 60;
 
