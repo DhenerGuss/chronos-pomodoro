@@ -10,10 +10,12 @@ import { formatDate } from "../../utils/formatDate";
 import { getTaskStatus } from "../../utils/getTaskStatus";
 import { sortTasks, type SortTasksOptions } from "../../utils/sortTasks";
 import { useEffect, useState } from "react";
+import { showMessage } from "../../adapters/showMessage";
 import { TaskActionTypes } from "../../contexts/TaskContext/taskActions";
 
 export function History() {
   const { state, dispatch } = useTaskContext();
+  const [confirmClearHistory, setConfirmClearHistory] = useState(false);
   const hasTasks = state.tasks.length > 0;
 
   const [sortTaskOptions, setSortTaskOpitions] = useState<SortTasksOptions>(
@@ -27,6 +29,14 @@ export function History() {
   );
 
   useEffect(() => {
+    if (!confirmClearHistory) return;
+
+    setConfirmClearHistory(false);
+
+    dispatch({ type: TaskActionTypes.RESET_STATE });
+  }, [confirmClearHistory, dispatch]);
+
+  useEffect(() => {
     setSortTaskOpitions((prevState) => ({
       ...prevState,
       tasks: sortTasks({
@@ -36,6 +46,12 @@ export function History() {
       }),
     }));
   }, [state.tasks]);
+
+  useEffect(() => {
+    return () => {
+      showMessage.dismiss();
+    };
+  }, []);
 
   function handleSortTasks({ field }: Pick<SortTasksOptions, "field">) {
     const newDirection = sortTaskOptions.direction === "desc" ? "asc" : "desc";
@@ -52,9 +68,10 @@ export function History() {
   }
 
   function handleResetHistory() {
-    if (!confirm("Tem certeza que deseja apagar o histórico?")) return;
-
-    dispatch({ type: TaskActionTypes.RESET_STATE });
+    showMessage.dismiss();
+    showMessage.confirm("Deseja limpar todo o histórico?", (confirmation) => {
+      setConfirmClearHistory(confirmation);
+    });
   }
 
   return (
