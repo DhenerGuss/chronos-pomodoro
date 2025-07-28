@@ -64,6 +64,9 @@ export function taskReducer(
         ),
       };
     }
+    case TaskActionTypes.CHANCE_SETTINGS: {
+      return { ...state, config: { ...action.payload } };
+    }
   }
 
   return state;
